@@ -24,8 +24,8 @@ int grid[GRID_X][GRID_Y];
  being returned to determine the type of a cell.
  picture an XxY grid, the returns should be fairly self explanatory
 
-		0			 6			3
-		 0,0  ...	 X,0
+		0      6      3
+		 0,0  ...  X,0
 		  .         .
 		2 .    8    . 5
 		  .         .
