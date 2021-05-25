@@ -2,13 +2,22 @@
 #include <stdlib.h>
 
 #define HOLDING_CAPACITY 4
-#define GRID_HEIGHT 9
+#define GRID_HEIGHT 21
 #define GRID_WIDTH GRID_HEIGHT
 // define GRID_WIDTH with something else for non-square grids
 // using odd values to ensure that there is a single "middle"
 // for the sake of symmetry
 
+// initiliaze array that will hold cell values.
+
 int grid[GRID_HEIGHT][GRID_WIDTH];
+
+const char* colors[4] = {
+  "\x1b[1;37m",
+  "\x1b[1;34m",
+  "\x1b[1;93m",
+  "\x1b[1;31m"
+};
 
 /* the following function is a little opaque in why ints are
  being returned to determine the type of a cell.
@@ -118,7 +127,7 @@ void printGrid() {
       for (int j = 0; j < GRID_WIDTH;)
       {
           int *pCell = &grid[i][j];
-          printf("%d  ", *pCell);
+          printf("%s%d  ", colors[*pCell%4], *pCell);
           ++j;
       }
       printf("\n");
@@ -141,7 +150,7 @@ void printCell() {
 };
 
 int main() {
-  grid[4][4]=124;
+  grid[GRID_HEIGHT/2][GRID_WIDTH/2]=(GRID_HEIGHT * GRID_WIDTH * 2);
   printf("INITIAL GRID CONFIGURATION\n");
   printGrid();
   int toppleCheck = 0;
