@@ -40,7 +40,7 @@ void freeSilo(int **silo, int rows, int cols);
 // returns an array with the index of each pile to topple, with index
 // given as (row)*(COLS) + col, where COLS is m of n x m rather than
 // the column of incidence
-int *scanSilo(int **silo, int rows, int cols);
+int *scanSilo(int **silo, int rows, int cols, int pileMax);
 
 // debug function prototypes
 // 4. prints out the silo to console in a pretty gridded format
@@ -74,6 +74,27 @@ void freeSilo(int **silo, int rows, int cols){
     free(silo);
 }
 
+int *scanSilo(int **silo, int rows, int cols, int pileMax){
+    int *indices=malloc(sizeof(int));
+    indices[0]=0;
+    int value=0;
+    int numIndices=0;
+    for (int i=0; i<rows; i++){
+        for(int j=0; j<cols; j++){
+            value = *( *(silo+i) + j);
+            if (value >= pileMax){
+                printf("toTopple (%i) found at %i\n", value, (i*cols)+j);
+                numIndices++;
+                printf("numIndices (%i)\n", numIndices);
+                indices=realloc(indices, sizeof(int)*(1 + numIndices));
+                indices[numIndices]=(i*cols)+j;
+                indices[0]=numIndices;
+            }
+        }
+    }
+    printf("numIndices (%i)\n", indices[0]);
+    return indices;
+}
 // debug function definitions
 void printSilo(int **silo, int rows, int cols){
     for (int i=0; i<rows; i++){
