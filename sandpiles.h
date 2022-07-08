@@ -49,6 +49,8 @@ void printSilo(int **silo, int rows, int cols);
 // out (rows + 1) addresses, 1 for the double int pointer holding
 // the (rows) int pointers
 void printSiloInfo(int **silo, int rows, int cols);
+// 6. prints indices of piles to be toppled, if any
+void printIndices(int *indices);
 
 /* END FUNCTION PROTOTYPES ******************************************/
 
@@ -75,26 +77,23 @@ void freeSilo(int **silo, int rows, int cols){
 }
 
 int *scanSilo(int **silo, int rows, int cols, int pileMax){
-    int *indices=malloc(sizeof(int));
-    indices[0]=0;
+    int *indices=NULL;
     int value=0;
     int numIndices=0;
     for (int i=0; i<rows; i++){
         for(int j=0; j<cols; j++){
             value = *( *(silo+i) + j);
             if (value >= pileMax){
-                printf("toTopple (%i) found at %i\n", value, (i*cols)+j);
                 numIndices++;
-                printf("numIndices (%i)\n", numIndices);
                 indices=realloc(indices, sizeof(int)*(1 + numIndices));
                 indices[numIndices]=(i*cols)+j;
                 indices[0]=numIndices;
             }
         }
     }
-    printf("numIndices (%i)\n", indices[0]);
     return indices;
 }
+
 // debug function definitions
 void printSilo(int **silo, int rows, int cols){
     for (int i=0; i<rows; i++){
@@ -108,6 +107,21 @@ void printSiloInfo(int **silo, int rows, int cols){
     printf("silo address:%li\n", silo);
     for (int i=0; i<rows; i++){
         printf("row_%i address:%li\n", i, *(silo+i));
+    }
+}
+void printIndices(int **silo, int rows, int cols, int *indices){
+    int bound=indices[0];
+    int N=0;
+    int M=0;
+    if (bound == 0){
+        printf("no piles to topple. . .\n");
+    } else {
+        printf("indices to be toppled w/ value\n");
+        for (int i=0; i<bound; i++){
+            // TO FINISH
+            M = indices[i+1] - 
+            printf("pile_%i:%i\n", indices[i+1], 
+        }
     }
 }
 #endif
