@@ -33,6 +33,7 @@
 /* BEGIN FUNCTION PROTOTYPES ****************************************/
 // 1. initializes grid and returns the first pile
 int **initSilo(int rows, int cols);
+
 // 2. frees the memory blocs allocated for said silo
 void freeSilo(int **silo, int rows, int cols);
 
@@ -42,15 +43,16 @@ void freeSilo(int **silo, int rows, int cols);
 // the column of incidence
 int *scanSilo(int **silo, int rows, int cols, int pileMax);
 
-// debug function prototypes
 // 4. prints out the silo to console in a pretty gridded format
 void printSilo(int **silo, int rows, int cols);
+
 // 5. prints out the addresses of the silo to console, should print 
 // out (rows + 1) addresses, 1 for the double int pointer holding
 // the (rows) int pointers
 void printSiloInfo(int **silo, int rows, int cols);
+
 // 6. prints indices of piles to be toppled, if any
-void printIndices(int *indices);
+void printIndices(int **silo, int rows, int *indices);
 
 /* END FUNCTION PROTOTYPES ******************************************/
 
@@ -77,7 +79,8 @@ void freeSilo(int **silo, int rows, int cols){
 }
 
 int *scanSilo(int **silo, int rows, int cols, int pileMax){
-    int *indices=NULL;
+    int *indices=malloc(sizeof(int));
+    indices[0]=0;
     int value=0;
     int numIndices=0;
     for (int i=0; i<rows; i++){
@@ -93,7 +96,6 @@ int *scanSilo(int **silo, int rows, int cols, int pileMax){
     }
     return indices;
 }
-
 // debug function definitions
 void printSilo(int **silo, int rows, int cols){
     for (int i=0; i<rows; i++){
@@ -109,18 +111,32 @@ void printSiloInfo(int **silo, int rows, int cols){
         printf("row_%i address:%li\n", i, *(silo+i));
     }
 }
-void printIndices(int **silo, int rows, int cols, int *indices){
+void printIndices(int **silo, int rows, int *indices){
     int bound=indices[0];
-    int N=0;
-    int M=0;
+    int j=0;
+    int index=0;
+    int test=0;
     if (bound == 0){
         printf("no piles to topple. . .\n");
     } else {
         printf("indices to be toppled w/ value\n");
-        for (int i=0; i<bound; i++){
-            // TO FINISH
-            M = indices[i+1] - 
-            printf("pile_%i:%i\n", indices[i+1], 
+        for (int i=0; i<bound; i++){ // TO FINISH
+            index = indices[i+1];
+            test = index;
+            while (test > 0){
+                test = index - j*(rows);
+                if ( test == 0 ){
+                    break;
+                } else if ( test < 0 ){
+                    j--;
+                    test = index - j*(rows);
+                    break;
+                } else {
+                    j++;
+                }
+            }
+            printf("pile_(%i,%i):%i\n", j, test, silo[j][test]); 
+            j = 0;
         }
     }
 }
