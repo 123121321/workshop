@@ -31,29 +31,37 @@
 // just stick to multidimensional int arrays
 
 /* BEGIN FUNCTION PROTOTYPES ****************************************/
-// 1. initializes grid and returns the first pile
+// initializes grid and returns the first pile
 int **initSilo(int rows, int cols);
 
-// 2. frees the memory blocs allocated for said silo
+// frees the memory blocs allocated for said silo
 void freeSilo(int **silo, int rows, int cols);
 
-// 3. scans through silo to see if any piles are at topple threshold
+// scans through silo to see if any piles are at topple threshold
 // returns an array with the index of each pile to topple, with index
 // given as (row)*(COLS) + col, where COLS is m of n x m rather than
-// the column of incidence
-int *scanSilo(int **silo, int rows, int cols, int pileMax);
+// the column of incidence, and the very first element is the num
+// of piles to topple
+int *indicesOfToTopple(int **silo, int rows, int cols, int pileMax);
 
-// 4. prints out the silo to console in a pretty gridded format
+// prints out the silo to console in a pretty gridded format
 void printSilo(int **silo, int rows, int cols);
 
-// 5. prints out the addresses of the silo to console, should print 
+// prints out the addresses of the silo to console, should print 
 // out (rows + 1) addresses, 1 for the double int pointer holding
 // the (rows) int pointers
 void printSiloInfo(int **silo, int rows, int cols);
 
-// 6. prints indices of piles to be toppled, if any
-void printIndices(int **silo, int rows, int *indices);
+// prints indices of piles to be toppled, if any
+void printIndices(int **silo, int rows, int cols, int *indices);
 
+// topples silo according to a pileMax, given an array populated w/ indices
+// of piles to topple within said silo
+void toppleSilo(int **silo, int rows, int cols, int *indices, int pileMax);
+
+// returns whether a given index has neighbors with 4 bits (essentially)
+// cells to the NESW? 0000 to 1111. requires the # of rows, cols.
+int pileNeighbors(int index, int rows, int cols);
 /* END FUNCTION PROTOTYPES ******************************************/
 
 /* BEGIN FUNCTION DEFINITIONS ***************************************/
@@ -78,7 +86,7 @@ void freeSilo(int **silo, int rows, int cols){
     free(silo);
 }
 
-int *scanSilo(int **silo, int rows, int cols, int pileMax){
+int *indicesOfToTopple(int **silo, int rows, int cols, int pileMax){
     int *indices=malloc(sizeof(int));
     indices[0]=0;
     int value=0;
@@ -111,33 +119,70 @@ void printSiloInfo(int **silo, int rows, int cols){
         printf("row_%i address:%li\n", i, *(silo+i));
     }
 }
-void printIndices(int **silo, int rows, int *indices){
+
+// FIX THIS SEE pileNeighbors comment
+void printIndices(int **silo, int rows, int cols, int *indices){
     int bound=indices[0];
-    int j=0;
     int index=0;
-    int test=0;
     if (bound == 0){
         printf("no piles to topple. . .\n");
     } else {
         printf("indices to be toppled w/ value\n");
         for (int i=0; i<bound; i++){ // TO FINISH
             index = indices[i+1];
-            test = index;
-            while (test > 0){
-                test = index - j*(rows);
-                if ( test == 0 ){
-                    break;
-                } else if ( test < 0 ){
-                    j--;
-                    test = index - j*(rows);
-                    break;
-                } else {
-                    j++;
-                }
-            }
-            printf("pile_(%i,%i):%i\n", j, test, silo[j][test]); 
-            j = 0;
+            pileNeighbors(index, rows, cols);
         }
     }
+}
+
+void toppleSilo(int **silo, int rows, int cols, int *indices, int pileMax){
+    int numToTopple=indices[0];
+    /* method: take a given index and convert into 2-component index
+       using (rows) and (cols). use (rows) and (cols) to determine whether
+       given pile will topple into a sink (off the grid) or into a
+       cell, updating said cell if the latter. */ 
+    for (int i=0; i<numToTopple; i++){
+        // to finish
+    }
+}
+
+// FIX THIS just return a 2 element array instead of an int
+// to skip all this index to component nonsense
+int pileNeighbors(int index, int rows, int cols){
+    // first, turn index into row and col components.
+    int neighbors = 0;
+    int ind_row=0;
+    int ind_col=0;
+    int i=0;
+    int hold=index;
+    while ( hold > 0 ){
+        hold -= i*(cols);
+        if (hold == 0){
+            ind_row = i;
+            ind_col = 0;
+        } else if (hold < 0){
+            ind_row = i + 1;
+            ind_col = hold + cols;
+        } else {
+            i++;
+        }
+    }
+    // then, store whether or not there are neighbors
+    // in cardinal directions NESW as 4 bits, for 
+    // NESW respectively (0000/0 to 1111/15)
+    if (ind_row - 1 >= 0){
+        neighbors =+ 8; // add 0b1000
+    }
+    if (ind_col + 1 <= cols){
+        neighbors =+ 4; // add 0b0100
+    }
+    if (ind_row + 1 <= rows){
+        neighbors =+ 2; // add 0b0010
+    }
+    if (ind_col - 1 >= 0){
+        neighbors =+ 1; // add 0b0001
+    }
+    printf("neighbors of (%i, %i):%i\n", ind_row, ind_col, neighbors);
+    return neighbors;
 }
 #endif
